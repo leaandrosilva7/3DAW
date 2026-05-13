@@ -1,0 +1,34 @@
+<style>
+    table, td {
+        border: 1px solid #000;
+    }
+
+    td {
+        padding: 6px;
+    }
+</style>
+
+<a href="/" >Voltar</a>
+<table>
+<?php 
+if(file_exists("questoes_multipla.txt")) {   
+    $arq = fopen("questoes_multipla.txt", "r");
+    fgets($arq); // tirar cabeçalho
+
+    while($linha = fgets($arq)) {
+        if(trim($linha) == "") continue;
+        $dados = explode(";", $linha);
+
+        echo "
+        <tr>
+            <td>$dados[0]</td>
+            <td>$dados[1]</td>
+            <td>$dados[2]</td>
+            <td>$dados[3]</td>
+            <td>$dados[4]</td>
+        </tr>
+        ";
+    }
+} 
+?>
+</table>

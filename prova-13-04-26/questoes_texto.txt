@@ -1,0 +1,2 @@
+pergunta;resposta
+Quantos paus se faz uma canoa;1
