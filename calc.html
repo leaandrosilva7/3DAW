@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora XML</title>
+</head>
+
+<body>
+
+    <div class="box">
+        <h2>Calculadora</h2>
+
+        <input type="number" id="n1" placeholder="Primeiro número">
+        <input type="number" id="n2" placeholder="Segundo número">
+
+        <select id="op">
+            <option value="somar">Somar</option>
+            <option value="subtrair">Subtrair</option>
+            <option value="multiplicar">Multiplicar</option>
+            <option value="dividir">Dividir</option>
+        </select>
+
+        <button onclick="calcular()">
+            Calcular
+        </button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function calcular() {
+
+            const n1 = parseFloat(document.getElementById("n1").value);
+            const n2 = parseFloat(document.getElementById("n2").value);
+            const op = document.getElementById("op").value;
+
+            if (isNaN(n1) || isNaN(n2)) {
+                alert("Digite os números.");
+                return;
+            }
+
+            // XML enviado na requisição
+            const xml = `
+        <calculadora>
+          <n1>${n1}</n1>
+          <n2>${n2}</n2>
+          <operacao>${op}</operacao>
+        </calculadora>
+      `;
+
+            // Requisição HTTP com XML
+            await fetch("https://httpbin.org/post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/xml"
+                },
+                body: xml
+            });
+
+            let resultado;
+
+            switch (op) {
+                case "somar":
+                    resultado = n1 + n2;
+                    break;
+
+                case "subtrair":
+                    resultado = n1 - n2;
+                    break;
+
+                case "multiplicar":
+                    resultado = n1 * n2;
+                    break;
+
+                case "dividir":
+                    resultado = n2 !== 0
+                        ? n1 / n2
+                        : "Erro: divisão por zero";
+                    break;
+            }
+
+            document.getElementById("resultado").innerText =
+                "Resultado: " + resultado;
+        }
+    </script>
+
+</body>
+
+</html>
