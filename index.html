@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Alunos</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            margin: 20px;
+        }
+
+        input{
+            margin: 5px;
+        }
+
+        button{
+            margin-top: 10px;
+        }
+
+        table{
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td{
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        .erro{
+            color: red;
+            margin-top: 10px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <h2>Cadastro de Alunos</h2>
+
+    <form id="formAluno">
+
+        <label>Nome:</label>
+        <input type="text" id="nome">
+
+        <label>Idade:</label>
+        <input type="number" id="idade">
+
+        <button type="submit">
+            Cadastrar aluno
+        </button>
+
+    </form>
+
+    <div class="erro" id="mensagemErro"></div>
+
+    <button onclick="mostrarAlunos()">
+        Mostrar Alunos
+    </button>
+
+    <div id="tabelaAlunos"></div>
+
+    <script>
+
+        // Array para armazenar alunos
+        let alunos = [];
+
+        const form = document.getElementById("formAluno");
+
+        form.addEventListener("submit", function(event){
+
+            // Impede recarregar a página
+            event.preventDefault();
+
+            const nome = document.getElementById("nome").value.trim();
+            const idade = document.getElementById("idade").value.trim();
+
+            const erro = document.getElementById("mensagemErro");
+
+            erro.innerHTML = "";
+
+            // ===== VALIDAÇÕES =====
+
+            // Nome vazio
+            if(nome === ""){
+                erro.innerHTML = "O nome é obrigatório.";
+                return;
+            }
+
+            // Nome muito curto
+            if(nome.length < 3){
+                erro.innerHTML = "O nome deve ter pelo menos 3 letras.";
+                return;
+            }
+
+            // Nome com números
+            if(/\d/.test(nome)){
+                erro.innerHTML = "O nome não pode conter números.";
+                return;
+            }
+
+            // Idade vazia
+            if(idade === ""){
+                erro.innerHTML = "A idade é obrigatória.";
+                return;
+            }
+
+            // Idade inválida
+            if(idade < 1 || idade > 120){
+                erro.innerHTML = "Digite uma idade válida.";
+                return;
+            }
+
+            // Cadastro do aluno
+            alunos.push({
+                nome: nome,
+                idade: idade
+            });
+
+            // Limpa campos
+            document.getElementById("nome").value = "";
+            document.getElementById("idade").value = "";
+
+            erro.innerHTML = "Aluno cadastrado com sucesso!";
+
+            mostrarAlunos();
+
+        });
+
+        // Função para mostrar alunos
+        function mostrarAlunos(){
+
+            const tabela = document.getElementById("tabelaAlunos");
+
+            let html = `
+                <table>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                    </tr>
+            `;
+
+            for(let i = 0; i < alunos.length; i++){
+
+                html += `
+                    <tr>
+                        <td>${alunos[i].nome}</td>
+                        <td>${alunos[i].idade}</td>
+                    </tr>
+                `;
+            }
+
+            html += `</table>`;
+
+            tabela.innerHTML = html;
+        }
+
+    </script>
+
+</body>
+</html>
