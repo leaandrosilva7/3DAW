@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Todas as Perguntas</h1>
+
+    <a href="index.html">Voltar</a><br><br>
+
+    <div id="lista">Carregando...</div>
+
+    <script>
+
+        fetch("api.php?acao=listar")
+        .then(function(r) {
+            return r.json();
+        })
+        .then(function(perguntas) {
+
+            var html = "";
+
+            for (var i = 0; i < perguntas.length; i++) {
+
+                var p = perguntas[i];
+
+                html += "<b>ID " + p.id + "</b> [" + p.tipo + "] - " + p.pergunta;
+                html += " &nbsp; <a href='editar.html?id=" + p.id + "'>Editar</a>";
+                html += " &nbsp; <a href='#' onclick='excluir(" + p.id + ")'>Excluir</a>";
+                html += "<br><br>";
+            }
+
+            document.getElementById("lista").innerHTML = html;
+
+        });
+
+
+        function excluir(id) {
+
+            if (!confirm("Tem certeza que deseja excluir?")) return;
+
+            fetch("api.php?acao=excluir&id=" + id)
+            .then(function(r) {
+                window.location.reload();
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>

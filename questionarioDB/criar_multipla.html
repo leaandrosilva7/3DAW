@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Criar Pergunta de Múltipla Escolha</h1>
+
+    <a href="index.html">Voltar</a><br><br>
+
+    Pergunta: <input type="text" id="pergunta"><br><br>
+    A: <input type="text" id="opcaoA"><br><br>
+    B: <input type="text" id="opcaoB"><br><br>
+    C: <input type="text" id="opcaoC"><br><br>
+    D: <input type="text" id="opcaoD"><br><br>
+    Gabarito (A, B, C ou D): <input type="text" id="gabarito"><br><br>
+
+    <button onclick="salvar()">Salvar</button>
+
+    <script>
+
+        function salvar() {
+
+            var pergunta = document.getElementById("pergunta").value;
+            var opcaoA   = document.getElementById("opcaoA").value;
+            var opcaoB   = document.getElementById("opcaoB").value;
+            var opcaoC   = document.getElementById("opcaoC").value;
+            var opcaoD   = document.getElementById("opcaoD").value;
+            var gabarito = document.getElementById("gabarito").value;
+
+            var resposta = opcaoA + ";" + opcaoB + ";" + opcaoC + ";" + opcaoD + ";" + gabarito;
+
+            fetch("api.php?acao=criar&tipo=multipla&pergunta=" + pergunta + "&resposta=" + resposta)
+            .then(function(r) {
+                window.location = "listar.html";
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>

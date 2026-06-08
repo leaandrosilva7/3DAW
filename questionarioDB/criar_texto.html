@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Criar Pergunta de Texto</h1>
+
+    <a href="index.html">Voltar</a><br><br>
+
+    Pergunta: <input type="text" id="pergunta"><br><br>
+    Resposta: <input type="text" id="resposta"><br><br>
+
+    <button onclick="salvar()">Salvar</button>
+
+    <script>
+
+        function salvar() {
+
+            var pergunta = document.getElementById("pergunta").value;
+            var resposta = document.getElementById("resposta").value;
+
+            fetch("api.php?acao=criar&tipo=texto&pergunta=" + pergunta + "&resposta=" + resposta)
+            .then(function(r) {
+                window.location = "listar.html";
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>
