@@ -36,7 +36,6 @@ function serializeForm(form){
     return params.join("&");
 }
 
-/* ---- CRIAR TEXTO ---- */
 if(acao == "criar_texto"){
 
     document.getElementById("conteudo").innerHTML =
@@ -54,7 +53,6 @@ if(acao == "criar_texto"){
         });
     };
 
-/* ---- CRIAR MULTIPLA ---- */
 }else if(acao == "criar_multipla"){
 
     document.getElementById("conteudo").innerHTML =
@@ -76,7 +74,6 @@ if(acao == "criar_texto"){
         });
     };
 
-/* ---- LISTAR ---- */
 }else if(acao == "listar"){
 
     xhr("GET","api.php?acao=listar",null,function(resp){
@@ -111,7 +108,7 @@ if(acao == "criar_texto"){
         });
     };
 
-/* ---- EDITAR ---- */
+
 }else if(acao == "editar"){
 
     var tipo = new URLSearchParams(window.location.search).get("tipo");
