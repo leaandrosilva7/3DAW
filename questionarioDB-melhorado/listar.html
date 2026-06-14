@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Todas as Perguntas</h1>
+
+    <a href="index.html">Voltar</a><br><br>
+
+    <div id="lista">Carregando...</div>
+
+    <script>
+
+        fetch("api.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                acao: "listar"
+            })
+        })
+        .then(function(r) {
+            return r.json();
+        })
+        .then(function(perguntas) {
+            let html = "";
+
+            for (let i = 0; i < perguntas.length; i++) {
+
+                let p = perguntas[i];
+
+                // Mostra id, tipo e o enunciado da pergunta
+                html += "<b>ID " + p.id + "</b> [" + p.tipo + "] - " + p.pergunta;
+
+                // Link para editar (passa o id pela URL para a próxima página saber qual editar)
+                html += " &nbsp; <a href='editar.html?id=" + p.id + "'>Editar</a>";
+
+                // Link para excluir (chama a função abaixo)
+                html += " &nbsp; <a href='#' onclick='excluir(" + p.id + ")'>Excluir</a>";
+
+                html += "<br><br>";
+            }
+
+            document.getElementById("lista").innerHTML = html;
+
+        });
+
+
+        function excluir(id) {
+
+            // Pede confirmação antes de excluir
+            if (!confirm("Tem certeza que deseja excluir?")) return;
+
+            fetch("api.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    acao: "excluir",
+                    id:   id
+                })
+            })
+            .then(function(r) {
+                window.location.reload();
+            });
+        }
+
+    </script>
+
+</body>
+</html>

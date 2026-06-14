@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Editar Pergunta</h1>
+
+    <a href="listar.html">Voltar</a><br><br>
+
+    <div id="formulario">Carregando...</div>
+
+    <script>
+
+        // Lê o parâmetro "id" da URL: editar.html?id=3
+        var params = new URLSearchParams(window.location.search);
+        var id = params.get("id");
+
+        fetch("api.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                acao: "listar"
+            })
+        })
+        .then(function(r) {
+            return r.json();
+        })
+        .then(function(perguntas) {
+
+            let p = "";
+
+            for (let i = 0; i < perguntas.length; i++) {
+                if (perguntas[i].id == id) {
+                    p = perguntas[i];
+                    break;
+                }
+            }
+
+            let html = "";
+
+            if (p.tipo == "texto") {
+
+                // Formulário simples: pergunta + resposta
+                html += "Pergunta: <input type='text' id='pergunta' value='" + p.pergunta + "'><br><br>";
+                html += "Resposta: <input type='text' id='resposta' value='" + p.resposta + "'><br><br>";
+                html += "<button onclick='salvarTexto()'>Salvar</button>";
+
+            } else {
+
+                // Múltipla escolha: desmonta a string "A;B;C;D;gabarito"
+                // usando split(";") para separar cada parte
+                var partes = p.resposta.split(";");
+
+                html += "Pergunta: <input type='text' id='pergunta' value='" + p.pergunta + "'><br><br>";
+                html += "A: <input type='text' id='opcaoA' value='" + partes[0] + "'><br><br>";
+                html += "B: <input type='text' id='opcaoB' value='" + partes[1] + "'><br><br>";
+                html += "C: <input type='text' id='opcaoC' value='" + partes[2] + "'><br><br>";
+                html += "D: <input type='text' id='opcaoD' value='" + partes[3] + "'><br><br>";
+                html += "Gabarito: <input type='text' id='gabarito' value='" + partes[4] + "'><br><br>";
+                html += "<button onclick='salvarMultipla()'>Salvar</button>";
+
+            }
+
+            document.getElementById("formulario").innerHTML = html;
+
+        });
+
+        function salvarTexto() {
+
+            let pergunta = document.getElementById("pergunta").value;
+            let resposta = document.getElementById("resposta").value;
+
+            fetch("api.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    acao:     "editar",
+                    id:       id,
+                    tipo:     "texto",
+                    pergunta: pergunta,
+                    resposta: resposta
+                })
+            })
+            .then(function(r) {
+                window.location = "listar.html";
+            });
+
+        }
+
+        function salvarMultipla() {
+
+            let pergunta = document.getElementById("pergunta").value;
+            let resposta =
+                document.getElementById("opcaoA").value + ";" +
+                document.getElementById("opcaoB").value + ";" +
+                document.getElementById("opcaoC").value + ";" +
+                document.getElementById("opcaoD").value + ";" +
+                document.getElementById("gabarito").value;
+
+            fetch("api.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    acao:     "editar",
+                    id:       id,
+                    tipo:     "multipla",
+                    pergunta: pergunta,
+                    resposta: resposta
+                })
+            })
+            .then(function(r) {
+                window.location = "listar.html";
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>

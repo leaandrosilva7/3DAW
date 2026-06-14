@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Criar Pergunta de Múltipla Escolha</h1>
+
+    <a href="index.html">Voltar</a><br><br>
+
+    Pergunta: <input type="text" id="pergunta"><br><br>
+    A: <input type="text" id="opcaoA"><br><br>
+    B: <input type="text" id="opcaoB"><br><br>
+    C: <input type="text" id="opcaoC"><br><br>
+    D: <input type="text" id="opcaoD"><br><br>
+    Gabarito (A, B, C ou D): <input type="text" id="gabarito"><br><br>
+
+    <button onclick="salvar()">Salvar</button>
+
+    <script>
+
+        function salvar() {
+
+            let pergunta = document.getElementById("pergunta").value;
+            let opcaoA   = document.getElementById("opcaoA").value;
+            let opcaoB   = document.getElementById("opcaoB").value;
+            let opcaoC   = document.getElementById("opcaoC").value;
+            let opcaoD   = document.getElementById("opcaoD").value;
+            let gabarito = document.getElementById("gabarito").value;
+
+            // Empacota as 4 opções e o gabarito em uma única string
+            let resposta = opcaoA + ";" + opcaoB + ";" + opcaoC + ";" + opcaoD + ";" + gabarito;
+
+            fetch("api.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    acao:     "criar",
+                    tipo:     "multipla",
+                    pergunta: pergunta,
+                    resposta: resposta
+                })
+            })
+            .then(function(r) {
+                window.location = "listar.html";
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>
