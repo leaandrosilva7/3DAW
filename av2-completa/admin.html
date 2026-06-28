@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotus Studio - Admin</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .admin-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .admin-header h1 {
+    font-size: 1.8rem;
+    color: var(--primary);
+  }
+
+  .search-wrap {
+    display: flex;
+    gap: 10px;
+  }
+
+  .search-wrap input {
+    padding: 10px 16px;
+    border: 1.5px solid var(--line);
+    border-radius: 30px;
+    font-family: inherit;
+    font-size: .9rem;
+    width: 280px;
+  }
+
+  .search-wrap input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .alert {
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 24px;
+    font-weight: 600;
+    font-size: .9rem;
+    display: none;
+  }
+
+  .alert-success { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+  .alert-error   { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+
+  .table-wrap {
+    background: #fff;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+    overflow-x: auto;
+  }
+
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+
+  thead { background: var(--primary-soft); }
+
+  th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 700;
+    color: var(--primary-strong);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 13px 16px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  tr:hover td { background: var(--primary-soft-2); }
+
+  .protocolo-badge {
+    background: var(--primary-soft);
+    color: var(--primary-strong);
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .8rem;
+    white-space: nowrap;
+  }
+
+  .actions { display:flex; gap:8px; }
+
+  .btn-edit {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--primary);
+    background: #fff;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: .8rem;
+    cursor: pointer;
+  }
+  .btn-edit:hover { background: var(--primary-soft); }
+
+  .btn-delete {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #dc2626;
+    background: #fff;
+    color: #dc2626;
+    font-weight: 700;
+    font-size: .8rem;
+    cursor: pointer;
+  }
+  .btn-delete:hover { background: #fee2e2; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-soft);
+  }
+
+  .total-badge { font-weight:700; color:var(--primary-strong); }
+
+  /* Modal de edicao */
+  .edit-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(60,10,70,.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, visibility .2s ease;
+  }
+
+  .edit-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .edit-box {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 36px 40px;
+    box-shadow: 0 30px 70px rgba(60,10,70,.35);
+    transform: translateY(16px) scale(.98);
+    transition: transform .25s ease;
+  }
+
+  .edit-overlay.active .edit-box {
+    transform: translateY(0) scale(1);
+  }
+
+  .edit-box h2 {
+    color: var(--primary);
+    font-size: 1.4rem;
+    margin-bottom: 24px;
+  }
+
+  .edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .edit-grid .full { grid-column: 1 / -1; }
+
+  .edit-box .form-field label {
+    display: block;
+    font-weight: 600;
+    font-size: .85rem;
+    margin-bottom: 5px;
+    color: var(--text);
+  }
+
+  .edit-box .form-field input,
+  .edit-box .form-field select {
+    width: 100%;
+    padding: 10px 13px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    font-family: inherit;
+    font-size: .9rem;
+    box-sizing: border-box;
+  }
+
+  .edit-box .form-field input:focus,
+  .edit-box .form-field select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .edit-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  .btn-cancel {
+    padding: 12px 24px;
+    border-radius: 30px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    color: var(--text-soft);
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+  }
+
+  #loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-soft);
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<header class="site-header">
+  <a href="index.html" class="logo">
+    <span class="logo-text">Lotus Studio</span>
+    <img src="img/logo.png" alt="Lotus Studio">
+  </a>
+  <nav class="main-nav">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="admin.html" style="color:var(--primary-deep)">Admin</a>
+  </nav>
+  <div class="header-right">
+    <div class="user-chip">
+      <span class="avatar">A</span>
+      <span>Admin</span>
+    </div>
+    <a href="index.html" class="logout-link">Sair</a>
+  </div>
+</header>
+
+<div class="admin-wrap">
+
+  <div class="admin-header">
+    <h1>Agendamentos</h1>
+    <div class="search-wrap">
+      <input type="text" id="busca" placeholder="Buscar por nome, unidade ou protocolo...">
+      <button class="btn btn-solid" onclick="filtrar()" style="padding:10px 22px;">Buscar</button>
+    </div>
+  </div>
+
+  <div class="alert alert-success" id="alert-success"></div>
+  <div class="alert alert-error"   id="alert-error"></div>
+
+  <div id="loading">Carregando...</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Protocolo</th>
+          <th>Cliente</th>
+          <th>Unidade</th>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Servicos</th>
+          <th>Pagamento</th>
+          <th>Total</th>
+          <th>Acoes</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty-state" id="empty" style="display:none">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+      <p>Nenhum agendamento encontrado.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal de edicao -->
+<div class="edit-overlay" id="edit-overlay">
+  <div class="edit-box">
+    <h2>Editar Agendamento</h2>
+    <div class="edit-grid">
+      <input type="hidden" id="edit-id">
+
+      <div class="form-field full">
+        <label>Nome do Cliente</label>
+        <input type="text" id="edit-nome">
+      </div>
+
+      <div class="form-field">
+        <label>Unidade</label>
+        <select id="edit-unidade">
+          <option>Barra da Tijuca</option>
+          <option>Recreio</option>
+          <option>Botafogo</option>
+          <option>Copacabana</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Pagamento</label>
+        <select id="edit-pagamento">
+          <option>Pix</option>
+          <option>Credito</option>
+          <option>Debito</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Data</label>
+        <input type="date" id="edit-data">
+      </div>
+
+      <div class="form-field">
+        <label>Hora</label>
+        <input type="time" id="edit-hora">
+      </div>
+
+      <div class="form-field full">
+        <label>Servicos</label>
+        <input type="text" id="edit-servicos">
+      </div>
+
+      <div class="form-field">
+        <label>Cupom</label>
+        <input type="text" id="edit-cupom">
+      </div>
+
+      <div class="form-field">
+        <label>Total (R$)</label>
+        <input type="number" id="edit-total" step="0.01">
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-solid" onclick="salvarEdicao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-logo-wrap">
+    <img src="img/logo.png" alt="Lotus Studio">
+  </div>
+  <div>Lotus Studio - Painel Administrativo</div>
+</footer>
+
+<script>
+var todosAgendamentos = [];
+
+function showAlert(tipo, msg) {
+  var el = document.getElementById('alert-' + tipo);
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(function() { el.style.display = 'none'; }, 4000);
+}
+
+function formatData(iso) {
+  if (!iso) return '-';
+  var p = iso.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function formatHora(h) {
+  if (!h) return '-';
+  return h.substring(0, 5);
+}
+
+function renderTabela(lista) {
+  var tbody = document.getElementById('tbody');
+  var empty = document.getElementById('empty');
+
+  if (!lista.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  tbody.innerHTML = lista.map(function(a) {
+    return '<tr>'
+      + '<td><span class="protocolo-badge">' + a.protocolo + '</span></td>'
+      + '<td>' + a.nome_cliente + '</td>'
+      + '<td>' + a.unidade + '</td>'
+      + '<td>' + formatData(a.data_agendamento) + '</td>'
+      + '<td>' + formatHora(a.hora_agendamento) + '</td>'
+      + '<td>' + a.servicos + '</td>'
+      + '<td>' + a.pagamento + '</td>'
+      + '<td class="total-badge">R$ ' + parseFloat(a.total).toFixed(2).replace('.', ',') + '</td>'
+      + '<td><div class="actions">'
+      + '<button class="btn-edit" onclick="abrirEdicao(' + a.id + ')">Editar</button>'
+      + '<button class="btn-delete" onclick="excluir(' + a.id + ')">Excluir</button>'
+      + '</div></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function carregarAgendamentos() {
+  document.getElementById('loading').style.display = 'block';
+  fetch('api/admin.php?action=listar')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('loading').style.display = 'none';
+      todosAgendamentos = data.agendamentos || [];
+      renderTabela(todosAgendamentos);
+    })
+    .catch(function() {
+      document.getElementById('loading').style.display = 'none';
+      showAlert('error', 'Erro ao carregar agendamentos.');
+    });
+}
+
+function filtrar() {
+  var busca = document.getElementById('busca').value.toLowerCase();
+  if (!busca) { renderTabela(todosAgendamentos); return; }
+  var filtrados = todosAgendamentos.filter(function(a) {
+    return a.nome_cliente.toLowerCase().indexOf(busca) >= 0
+        || a.unidade.toLowerCase().indexOf(busca) >= 0
+        || a.protocolo.toLowerCase().indexOf(busca) >= 0;
+  });
+  renderTabela(filtrados);
+}
+
+document.getElementById('busca').addEventListener('input', filtrar);
+
+function excluir(id) {
+  if (!confirm('Excluir este agendamento?')) return;
+  fetch('api/admin.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', id: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showAlert('success', 'Agendamento excluido com sucesso.');
+      carregarAgendamentos();
+    } else {
+      showAlert('error', data.mensagem || 'Erro ao excluir.');
+    }
+  });
+}
+
+function abrirEdicao(id) {
+  var a = todosAgendamentos.find(function(x) { return x.id == id; });
+  if (!a) return;
+
+  document.getElementById('edit-id').value       = a.id;
+  document.getElementById('edit-nome').value     = a.nome_cliente;
+  document.getElementById('edit-unidade').value  = a.unidade;
+  document.getElementById('edit-pagamento').value= a.pagamento;
+  document.getElementById('edit-data').value     = a.data_agendamento;
+  document.getElementById('edit-hora').value     = a.hora_agendamento ? a.hora_agendamento.substring(0,5) : '';
+  document.getElementById('edit-servicos').value = a.servicos;
+  document.getElementById('edit-cupom').value    = a.cupom || '';
+  document.getElementById('edit-total').value    = a.total;
+
+  document.getElementById('edit-overlay').classList.add('active');
+}
+
+function fecharModal() {
+  document.getElementById('edit-overlay').classList.remove('active');
+}
+
+document.getElementById('edit-overlay').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal();
+});
+
+function salvarEdicao() {
+  var payload = {
+    action:           'edit',
+    id:               document.getElementById('edit-id').value,
+    nome_cliente:     document.getElementById('edit-nome').value,
+    unidade:          document.getElementById('edit-unidade').value,
+    pagamento:        document.getElementById('edit-pagamento').value,
+    data_agendamento: document.getElementById('edit-data').value,
+    hora_agendamento: document.getElementById('edit-hora').value,
+    servicos:         document.getElementById('edit-servicos').value,
+    cupom:            document.getElementById('edit-cupom').value,
+    total:            document.getElementById('edit-total').value
+  };
+
+  fetch('api/admin.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      fecharModal();
+      showAlert('success', 'Agendamento atualizado com sucesso.');
+      carregarAgendamentos();
+    } else {
+      showAlert('error', data.mensagem || 'Erro ao salvar.');
+    }
+  });
+}
+
+carregarAgendamentos();
+</script>
+
+</body>
+</html>
